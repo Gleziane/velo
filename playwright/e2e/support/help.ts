@@ -1,20 +1,20 @@
-import { Page } from '@playwright/test';
+import { Page } from '@playwright/test'
 
 export function genarateOrderCode() {
-    const prefix = 'VLO';
+  const prefix = 'VLO'
 
-    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-    let randomPart = '';
+  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'
+  let randomPart = ''
 
-    for (let i = 0; i < 6; i++) {
-        const randomIndex = Math.floor(Math.random() * chars.length);
-        randomPart += chars[randomIndex];
-    }
+  for (let i = 0; i < 6; i++) {
+    const randomIndex = Math.floor(Math.random() * chars.length)
+    randomPart += chars[randomIndex]
+  }
 
-    return `${prefix}-${randomPart}`;
+  return `${prefix}-${randomPart}`
 }
 
 export async function csearchOrder(page: Page, orderNumber: string) {
-    await page.getByRole('textbox', { name: 'Código do Pedido' }).fill(orderNumber);
-    await page.getByRole('button', { name: 'Buscar Pedido' }).click();
+  await page.getByRole('textbox', { name: 'Código do Pedido' }).fill(orderNumber)
+  await page.getByRole('button', { name: 'Buscar Pedido' }).click()
 }
