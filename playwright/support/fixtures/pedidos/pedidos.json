@@ -1,0 +1,84 @@
+{
+  "pedidosValidos": [
+    {
+      "id": "pedido-aprovado",
+      "descricao": "deve consultar um pedido aprovado",
+      "orderData": {
+        "status": "APROVADO",
+        "color": "lunar-white",
+        "wheelType": "aero",
+        "customerName": "Fernando Papito",
+        "customerEmail": "papito@velo.dev",
+        "paymentMethod": "avista",
+        "totalPrice": 40000
+      },
+      "expectedOrder": {
+        "status": "APROVADO",
+        "color": "Lunar White",
+        "wheels": "aero Wheels",
+        "customer": {
+          "name": "Fernando Papito",
+          "email": "papito@velo.dev"
+        },
+        "payment": "À Vista"
+      }
+    },
+    {
+      "id": "pedido-reprovado",
+      "descricao": "deve consultar um pedido reprovado",
+      "orderData": {
+        "status": "REPROVADO",
+        "color": "midnight-black",
+        "wheelType": "sport",
+        "customerName": "Steve Jobs",
+        "customerEmail": "jobs@apple.com",
+        "paymentMethod": "avista",
+        "totalPrice": 40000
+      },
+      "expectedOrder": {
+        "status": "REPROVADO",
+        "color": "Midnight Black",
+        "wheels": "sport Wheels",
+        "customer": {
+          "name": "Steve Jobs",
+          "email": "jobs@apple.com"
+        },
+        "payment": "À Vista"
+      }
+    },
+    {
+      "id": "pedido-em-analise",
+      "descricao": "deve consultar um pedido em analise",
+      "orderData": {
+        "status": "EM_ANALISE",
+        "color": "lunar-white",
+        "wheelType": "aero",
+        "customerName": "João da Silva",
+        "customerEmail": "joao@velo.dev",
+        "paymentMethod": "avista",
+        "totalPrice": 40000
+      },
+      "expectedOrder": {
+        "status": "EM_ANALISE",
+        "color": "Lunar White",
+        "wheels": "aero Wheels",
+        "customer": {
+          "name": "João da Silva",
+          "email": "joao@velo.dev"
+        },
+        "payment": "À Vista"
+      }
+    }
+  ],
+  "pedidosInvalidos": [
+    {
+      "id": "pedido-nao-encontrado",
+      "descricao": "deve exibir mensagem quando o pedido não é encontrado"
+    },
+    {
+      "id": "pedido-formato-invalido",
+      "descricao": "deve exibir mensagem quando o código do pedido está fora do padrão",
+      "orderCode": "XYZ-INVALID"
+    }
+  ]
+}

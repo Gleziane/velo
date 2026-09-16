@@ -6,5 +6,10 @@ export function createLandingActions(page: Page) {
       await page.goto('http://localhost:5173/')
       await expect(page.getByTestId('hero-section').getByRole('heading')).toContainText('Velô Sprint')
     },
+
+    async goToConfigurator() {
+      await page.getByTestId('hero-cta-primary').click()
+      await expect(page).toHaveURL(/\/configure$/)
+    },
   }
 }

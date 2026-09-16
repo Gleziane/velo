@@ -60,10 +60,10 @@ const stores = [
 
 const orderSchema = z.object({
   name: z.string().min(2, 'Nome deve ter pelo menos 2 caracteres'),
-  surname: z.string().min(2, 'Sobrenome deve ter pelo menos 2 caracteres'),
+  surname: z.string().min(2, 'Lastname deve ter pelo menos 2 caracteres'),
   email: z.string().email('Email inválido'),
   phone: z.string().min(14, 'Telefone inválido'),
-  cpf: z.string().min(14, 'CPF inválido'),
+  cpf: z.string().min(14, 'Document inválido'),
   store: z.string().min(1, 'Selecione uma loja'),
   terms: z.boolean().refine((val) => val === true, 'Aceite os termos'),
 });
@@ -95,7 +95,7 @@ const Order = () => {
   });
 
   const totalPrice = calculateTotalPrice(configuration);
-  
+
   // Cálculo dinâmico das parcelas baseado no valor da entrada
   // Parcela = (Total - Entrada) / 12 * 1.02
   const amountToFinance = Math.max(0, totalPrice - entryValue);
@@ -183,8 +183,8 @@ const Order = () => {
       }
     }
 
-    const finalPrice = paymentMethod === 'financiamento' 
-      ? (entryValue + totalFinanced) 
+    const finalPrice = paymentMethod === 'financiamento'
+      ? (entryValue + totalFinanced)
       : totalPrice;
 
     const optionalsSanitized = (
@@ -257,7 +257,7 @@ const Order = () => {
         <div className="grid lg:grid-cols-3 gap-8">
           {/* Form */}
           <div className="lg:col-span-2">
-            <form onSubmit={handleSubmit} className="space-y-8">
+            <form onSubmit={handleSubmit} noValidate className="space-y-8">
               {/* Personal Info */}
               <section className="bg-card rounded-lg p-6 shadow-elegant">
                 <h2 className="font-display text-lg font-semibold mb-6">Dados Pessoais</h2>
@@ -271,10 +271,10 @@ const Order = () => {
                       onChange={(e) => handleChange('name', e.target.value)}
                       className={cn(errors.name && 'border-destructive')}
                     />
-                    {errors.name && <p className="text-sm text-destructive">{errors.name}</p>}
+                    {errors.name && <p className="text-sm text-destructive" data-testid="error-checkout-name">{errors.name}</p>}
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="surname">Sobrenome</Label>
+                    <Label htmlFor="surname">Lastname</Label>
                     <Input
                       id="surname"
                       data-testid="checkout-surname"
@@ -282,7 +282,7 @@ const Order = () => {
                       onChange={(e) => handleChange('surname', e.target.value)}
                       className={cn(errors.surname && 'border-destructive')}
                     />
-                    {errors.surname && <p className="text-sm text-destructive">{errors.surname}</p>}
+                    {errors.surname && <p className="text-sm text-destructive" data-testid="error-checkout-surname">{errors.surname}</p>}
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="email">Email</Label>
@@ -294,7 +294,7 @@ const Order = () => {
                       onChange={(e) => handleChange('email', e.target.value)}
                       className={cn(errors.email && 'border-destructive')}
                     />
-                    {errors.email && <p className="text-sm text-destructive">{errors.email}</p>}
+                    {errors.email && <p className="text-sm text-destructive" data-testid="error-checkout-email">{errors.email}</p>}
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="phone">Telefone</Label>
@@ -312,10 +312,10 @@ const Order = () => {
                         />
                       )}
                     </InputMask>
-                    {errors.phone && <p className="text-sm text-destructive">{errors.phone}</p>}
+                    {errors.phone && <p className="text-sm text-destructive" data-testid="error-checkout-phone">{errors.phone}</p>}
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="cpf">CPF</Label>
+                    <Label htmlFor="cpf">Document</Label>
                     <InputMask
                       mask="999.999.999-99"
                       value={formData.cpf}
@@ -330,7 +330,7 @@ const Order = () => {
                         />
                       )}
                     </InputMask>
-                    {errors.cpf && <p className="text-sm text-destructive">{errors.cpf}</p>}
+                    {errors.cpf && <p className="text-sm text-destructive" data-testid="error-checkout-cpf">{errors.cpf}</p>}
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="store">Loja para Retirada</Label>
@@ -353,7 +353,7 @@ const Order = () => {
                         ))}
                       </SelectContent>
                     </Select>
-                    {errors.store && <p className="text-sm text-destructive">{errors.store}</p>}
+                    {errors.store && <p className="text-sm text-destructive" data-testid="error-checkout-store">{errors.store}</p>}
                   </div>
                 </div>
               </section>
@@ -461,7 +461,7 @@ const Order = () => {
                         Política de Privacidade
                       </Link>
                     </Label>
-                    {errors.terms && <p className="text-sm text-destructive mt-1">{errors.terms}</p>}
+                    {errors.terms && <p className="text-sm text-destructive mt-1" data-testid="error-checkout-terms">{errors.terms}</p>}
                   </div>
                 </div>
               </section>

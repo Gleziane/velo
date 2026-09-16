@@ -1,0 +1,2 @@
+INSERT INTO "public"."orders" ("id", "order_number", "color", "wheel_type", "customer_name", "customer_email", "customer_phone", "customer_cpf", "payment_method", "total_price", "status", "created_at", "updated_at")
+VALUES ('b7e8c921-5f43-4a76-9d21-6c8f2e4b7a15', 'VLO-D1IACD', 'lunar-white', 'aero', 'KLEBER ZANDONA', 'glezianealves@gmail.com', '(65) 99999-1663', '000.000.141-01', 'avista', '40000', 'APROVADO', '2026-08-24 18:37:27.585105+00', '2026-08-24 18:37:27.585105+00');

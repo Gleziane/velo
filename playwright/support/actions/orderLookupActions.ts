@@ -14,14 +14,15 @@ export type OrderDetails = {
   payment: string
 }
 
-export function createOrderLookupActions(page: Page) {
-  const statusClasses = {
+
+
+const statusClasses = {
     APROVADO: ['bg-green-100', 'text-green-700', 'lucide-circle-check-big'],
     REPROVADO: ['bg-red-100', 'text-red-700', 'lucide-circle-x'],
     EM_ANALISE: ['bg-yellow-100', 'text-amber-700', 'lucide-clock'],
   } as const
 
-  const validateStatusBadge = async (status: OrderStatus, orderNumber: string) => {
+  const validateStatusBadge = async (page: Page, status: OrderStatus, orderNumber: string) => {
     const [bgClass, textClass, iconClass] = statusClasses[status]
     const orderResult = page.getByTestId(`order-result-${orderNumber}`)
     const statusBadge = orderResult.locator('div').filter({ hasText: status }).last()
@@ -30,8 +31,19 @@ export function createOrderLookupActions(page: Page) {
     await expect(statusBadge).toHaveClass(new RegExp(textClass))
     await expect(statusBadge.locator('svg')).toHaveClass(new RegExp(iconClass))
   }
+  
+export function createOrderLookupActions(page: Page) {
+
+const orderInput = page.getByRole('textbox', { name: 'Código do Pedido' })
+const searchButton = page.getByRole('button', { name:'Buscar Pedido'})
 
   return {
+
+    elements: {
+      orderInput,
+      searchButton
+    },
+
     async searchOrder(code: string) {
       await page.getByRole('textbox', { name: 'Código do Pedido' }).fill(code)
       await page.getByRole('button', { name: 'Buscar Pedido' }).click()
@@ -56,7 +68,7 @@ export function createOrderLookupActions(page: Page) {
       await expect(orderResult).toContainText(details.payment)
       await expect(orderResult).toContainText(/R\$\s*\d+\.\d+,\d+/)
 
-      await validateStatusBadge(details.status, details.number)
+      await validateStatusBadge(page, details.status, details.number)
     },
 
     async validateOrderNotFound() {
@@ -67,6 +79,7 @@ export function createOrderLookupActions(page: Page) {
       `)
     },
 
-    validateStatusBadge,
+    validateStatusBadge: (status: OrderStatus, orderNumber: string) =>
+      validateStatusBadge(page, status, orderNumber),
   }
 }

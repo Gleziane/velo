@@ -3,6 +3,9 @@ import { test, expect } from '../support/fixtures'
 import { generateOrderCode, seedOrder } from '../support/helpers'
 import { type OrderDetails } from '../support/actions/orderLookupActions'
 
+import pedidosData from '../support/fixtures/pedidos/pedidos.json' with { type: 'json' }
+
+
 /// AAA - Arrange, Act, Assert
 
 test.describe('Consulta de Pedido', () => {
@@ -11,107 +14,52 @@ test.describe('Consulta de Pedido', () => {
     await app.navbar.openOrderLookup()
   })
 
-  test('deve consultar um pedido aprovado', async ({ app }) => {
-    const orderData = {
-      number: generateOrderCode(),
-      status: 'APROVADO' as const,
-      color: 'lunar-white' as const,
-      wheelType: 'aero' as const,
-      customerName: 'Fernando Papito',
-      customerEmail: 'papito@velo.dev',
-      paymentMethod: 'avista' as const,
-      totalPrice: 40000,
-    }
+  test.describe('Pedidos válidos', () => {
+    pedidosData.pedidosValidos.forEach((fixture) => {
+      test(fixture.descricao, async ({ app }) => {
+        // Arrange
+        const orderData = {
+          number: generateOrderCode(),
+          ...fixture.orderData,
+        }
 
-    await seedOrder(orderData)
+        await seedOrder(orderData as any)
 
-    const order: OrderDetails = {
-      number: orderData.number,
-      status: 'APROVADO',
-      color: 'Lunar White',
-      wheels: 'aero Wheels',
-      customer: {
-        name: 'Fernando Papito',
-        email: 'papito@velo.dev',
-      },
-      payment: 'À Vista',
-    }
+        const expectedOrder: OrderDetails = {
+          number: orderData.number,
+          ...fixture.expectedOrder,
+        }
 
-    await app.orderLookup.searchOrder(order.number)
-    await app.orderLookup.validateOrderDetails(order)
+        // Act
+        await app.orderLookup.searchOrder(expectedOrder.number)
+
+        // Assert
+        await app.orderLookup.validateOrderDetails(expectedOrder)
+      })
+    })
   })
 
-  test('deve consultar um pedido reprovado', async ({ app }) => {
-    const orderData = {
-      number: generateOrderCode(),
-      status: 'REPROVADO' as const,
-      color: 'midnight-black' as const,
-      wheelType: 'sport' as const,
-      customerName: 'Steve Jobs',
-      customerEmail: 'jobs@apple.com',
-      paymentMethod: 'avista' as const,
-      totalPrice: 40000,
-    }
+  test.describe('Pedidos inválidos', () => {
+    test('deve exibir mensagem quando o pedido não é encontrado', async ({ app }) => {
+      // Arrange
+      const order = generateOrderCode()
 
-    await seedOrder(orderData)
+      // Act
+      await app.orderLookup.searchOrder(order)
 
-    const order: OrderDetails = {
-      number: orderData.number,
-      status: 'REPROVADO',
-      color: 'Midnight Black',
-      wheels: 'sport Wheels',
-      customer: {
-        name: 'Steve Jobs',
-        email: 'jobs@apple.com',
-      },
-      payment: 'À Vista',
-    }
+      // Assert
+      await app.orderLookup.validateOrderNotFound()
+    })
 
-    await app.orderLookup.searchOrder(order.number)
-    await app.orderLookup.validateOrderDetails(order)
-  })
+    test('deve exibir mensagem quando o código do pedido está fora do padrão', async ({ app }) => {
+      // Arrange
+      const order = pedidosData.pedidosInvalidos[1].orderCode
 
-  test('deve consultar um pedido em analise', async ({ app }) => {
-    const orderData = {
-      number: generateOrderCode(),
-      status: 'EM_ANALISE' as const,
-      color: 'lunar-white' as const,
-      wheelType: 'aero' as const,
-      customerName: 'João da Silva',
-      customerEmail: 'joao@velo.dev',
-      paymentMethod: 'avista' as const,
-      totalPrice: 40000,
-    }
+      // Act
+      await app.orderLookup.searchOrder(order)
 
-    await seedOrder(orderData)
-
-    const order: OrderDetails = {
-      number: orderData.number,
-      status: 'EM_ANALISE',
-      color: 'Lunar White',
-      wheels: 'aero Wheels',
-      customer: {
-        name: 'João da Silva',
-        email: 'joao@velo.dev',
-      },
-      payment: 'À Vista',
-    }
-
-    await app.orderLookup.searchOrder(order.number)
-    await app.orderLookup.validateOrderDetails(order)
-  })
-
-  test('deve exibir mensagem quando o pedido não é encontrado', async ({ app }) => {
-    const order = generateOrderCode()
-
-    await app.orderLookup.searchOrder(order)
-    await app.orderLookup.validateOrderNotFound()
-  })
-
-  test('deve exibir mensagem quando o código do pedido está fora do padrão', async ({ app }) => {
-    const order = 'XYZ-INVALID'
-
-    await app.orderLookup.searchOrder(order)
-    await app.orderLookup.validateOrderNotFound()
+      // Assert
+      await app.orderLookup.validateOrderNotFound()
+    })
   })
 })
