@@ -1,5 +1,5 @@
 import { useLocation, useNavigate, Navigate, Link } from 'react-router-dom';
-import { CheckCircle, XCircle } from 'lucide-react';
+import { CheckCircle, XCircle, Clock } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Order, formatPrice, ExteriorColor, WheelType } from '@/store/configuratorStore';
@@ -43,6 +43,7 @@ const Success = () => {
   }
 
   const isApproved = order.status === 'APROVADO';
+  const isPending = order.status === 'EM_ANALISE';
 
   return (
     <div className="min-h-screen bg-background flex flex-col items-center justify-center p-4">
@@ -50,13 +51,17 @@ const Success = () => {
       <Link to="/" className="mb-8">
         <img src={logo} alt="Velô" className="h-8" />
       </Link>
-      
+
       <div className="w-full max-w-2xl bg-card rounded-lg shadow-elegant-lg p-8 animate-scale-in">
         {/* Status Icon */}
         <div className="flex justify-center mb-6">
           {isApproved ? (
             <div className="w-20 h-20 rounded-full bg-success/10 flex items-center justify-center">
               <CheckCircle className="w-12 h-12 text-success" />
+            </div>
+          ) : isPending ? (
+            <div className="w-20 h-20 rounded-full bg-warning/10 flex items-center justify-center">
+              <Clock className="w-12 h-12 text-warning" />
             </div>
           ) : (
             <div className="w-20 h-20 rounded-full bg-destructive/10 flex items-center justify-center">
@@ -71,14 +76,16 @@ const Success = () => {
             data-testid="success-status"
             className={cn(
               'font-display text-3xl font-bold mb-2',
-              isApproved ? 'text-success' : 'text-destructive'
+              isApproved ? 'text-success' : isPending ? 'text-warning' : 'text-destructive'
             )}
           >
-            {isApproved ? 'Pedido Aprovado!' : 'Crédito Reprovado'}
+            {isApproved ? 'Pedido Aprovado!' : isPending ? 'Pedido em Análise' : 'Crédito Reprovado'}
           </h1>
           <p className="text-muted-foreground">
             {isApproved
               ? 'Seu pedido foi processado com sucesso. Em breve entraremos em contato.'
+              : isPending
+              ? 'Seu pedido foi recebido e está em análise de crédito. Em breve entraremos em contato.'
               : 'Infelizmente seu crédito não foi aprovado. Tente novamente com pagamento à vista.'}
           </p>
         </div>
