@@ -44,9 +44,14 @@ export function createCheckoutActions(page: Page) {
     elements,
 
     async goto() {
-      await page.goto('http://localhost:5173/order')
+      await page.goto('/order')
       await expect(elements.submitButton).toBeVisible()
     },
+
+    async fillDownPayment(value: string) {
+    await page.getByTestId('input-entry-value').fill(value)
+    },
+
 
     async fillCustomerData(data: CustomerData) {
       await elements.nameInput.fill(data.name)

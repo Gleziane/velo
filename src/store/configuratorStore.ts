@@ -89,6 +89,17 @@ export const calculateInstallment = (total: number): number => {
   return Math.round(installment * 100) / 100;
 };
 
+export const migrateConfiguratorPersistedState = (persistedState: any) => {
+  if (persistedState?.configuration) {
+    const raw = persistedState.configuration.optionals;
+    const optionals = Array.isArray(raw) ? raw : [];
+    persistedState.configuration.optionals = optionals.filter(
+      (opt: any) => typeof opt === 'string' && opt in (OPTIONAL_PRICES as Record<string, number>)
+    );
+  }
+  return persistedState;
+};
+
 export const formatPrice = (value: number): string => {
   return new Intl.NumberFormat('pt-BR', {
     style: 'currency',
@@ -175,16 +186,7 @@ export const useConfiguratorStore = create<ConfiguratorState>()(
     {
       name: 'velo-configurator-storage',
       version: 2,
-      migrate: (persistedState: any) => {
-        if (persistedState?.configuration) {
-          const raw = persistedState.configuration.optionals;
-          const optionals = Array.isArray(raw) ? raw : [];
-          persistedState.configuration.optionals = optionals.filter(
-            (opt: any) => typeof opt === 'string' && opt in (OPTIONAL_PRICES as Record<string, number>)
-          );
-        }
-        return persistedState;
-      },
+      migrate: migrateConfiguratorPersistedState,
     }
   )
 );

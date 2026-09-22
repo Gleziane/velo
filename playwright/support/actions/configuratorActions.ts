@@ -38,7 +38,7 @@ export function createConfiguratorActions(page: Page) {
     },
 
     async goto() {
-      await page.goto('http://localhost:5173/configure')
+      await page.goto('/configure')
       await expect(priceElement).toBeVisible()
     },
 
