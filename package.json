@@ -14,6 +14,7 @@
     "test:e2e:single": "playwright test playwright/e2e/pedido.spec.ts --project=chromium",
     "playwright:install": "playwright install --with-deps",
 
+    "test": "vitest run",
     "test:unit": "vitest run",
     "test:unit:watch": "vitest",
     "test:unit:coverage": "vitest run --coverage"
