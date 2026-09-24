@@ -9,11 +9,9 @@
     "build:dev": "vite build --mode development",
     "lint": "eslint .",
     "preview": "vite preview",
-
     "test:e2e": "playwright test",
     "test:e2e:single": "playwright test playwright/e2e/pedido.spec.ts --project=chromium",
     "playwright:install": "playwright install --with-deps",
-
     "test": "vitest run",
     "test:unit": "vitest run",
     "test:unit:watch": "vitest",
@@ -99,6 +97,7 @@
     "tailwindcss": "^3.4.17",
     "typescript": "^5.8.3",
     "typescript-eslint": "^8.38.0",
+    "vercel": "^60.0.0",
     "vite": "^5.4.19",
     "vitest": "2.1.9"
   }
