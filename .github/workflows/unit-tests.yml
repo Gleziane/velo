@@ -18,8 +18,6 @@ jobs:
   unit-tests:
     name: Run Unit Tests
     runs-on: ubuntu-latest
-    outputs:
-      deployment-url: ${{ steps.deploy.outputs.deployment-url }}
 
     steps:
       - name: Checkout repository
@@ -41,6 +39,8 @@ jobs:
     name: Build & Deploy Vercel Preview
     needs: [unit-tests]
     runs-on: ubuntu-latest
+    outputs:
+      deployment-url: ${{ steps.deploy.outputs.deployment-url }}
 
     steps:
       - name: Checkout repository
@@ -54,12 +54,6 @@ jobs:
 
       - name: Install dependencies
         run: yarn install --frozen-lockfile
-
-       # Deploy preview no vercel 
-      - name: Deploy preview
-        id: deploy 
-        run: |
-          URL=$(yarn vercel deploy --prebuilt --target=preview --token=$VERCEL_TOKEN --scope=$VERCEL_SCOPE)
 
       # 1. Obter as configurações do projeto na Vercel
       - name: Pull config Vercel
@@ -71,58 +65,47 @@ jobs:
 
       # 3. Deploy preview na Vercel
       - name: Deploy preview
-        run: yarn vercel deploy --prebuilt --token=$VERCEL_TOKEN --scope=$VERCEL_SCOPE
-        echo "deployment-url=$URL" >> $GITHUB_OUTPUT
+        id: deploy
+        run: |
+          URL=$(yarn --silent vercel deploy --prebuilt --token=$VERCEL_TOKEN --scope=$VERCEL_SCOPE)
+          echo "deployment-url=$URL" >> $GITHUB_OUTPUT
 
-e2e-tests:
+  e2e-tests:
     name: Run E2E Tests
     needs: [build-and-deploy]
     runs-on: ubuntu-latest
 
     steps:
+      # Faz checkout do código do repositorio
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      # Faz o setup do Node.js
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 22
           cache: yarn
 
+      # Instala as dependências do projeto
       - name: Install dependencies
         run: yarn install --frozen-lockfile
+
+      # Instalação do Chromium
+      - name: Install Playwright Browser
+        run: yarn playwright install --with-deps chromium
 
       - name: Run E2E tests
         run: yarn test:e2e
 
-       # Faz checkout do código do repositorio 
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-       # Faz o setup do Node.js
-      - name: Setup Node.js 
-        uses: actions/setup-node@v4
-        with:
-          node-version: 22
-          cache: yarn
-
-       # Instala as dependências do projeto
-      - name: Install dependencies
-        run: yarn install --frozen-lockfile   
-
-       # Instalação do Chromium 
-      - name: Install Playwright Browser
-        run: yarn playwright install --with-deps chromium 
-
-       # Execução dos Testes de Regressão 
+      # Execução dos Testes de Regressão
       - name: Run Regression Tests
         run: yarn playwright test playwright/e2e/online.spec.ts
         env:
-        BASE_URL: ${{ needs.build-and-deploy.outputs.deployment-url }}
+          BASE_URL: ${{ needs.build-and-deploy.outputs.deployment-url }}
 
-
-# 7. Relatorio de testes Automatizados
-      - name: Upload Playwright report 
+      # 7. Relatorio de testes Automatizados
+      - name: Upload Playwright report
         if: ${{ !cancelled() }}
         uses: actions/upload-artifact@v7.0.1
         with:
