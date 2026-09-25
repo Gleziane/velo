@@ -12,7 +12,6 @@ on:
 
 env:
   VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
-  VERCEL_SCOPE: ${{ secrets.VERCEL_SCOPE }}
 
 jobs:
   unit-tests:
@@ -39,6 +38,7 @@ jobs:
     name: Build & Deploy Vercel Preview
     needs: [unit-tests]
     runs-on: ubuntu-latest
+
     outputs:
       deployment-url: ${{ steps.deploy.outputs.deployment-url }}
 
@@ -55,19 +55,16 @@ jobs:
       - name: Install dependencies
         run: yarn install --frozen-lockfile
 
-      # 1. Obter as configurações do projeto na Vercel
-      - name: Pull config Vercel
-        run: yarn vercel pull --yes --environment=preview --token=$VERCEL_TOKEN --scope=$VERCEL_SCOPE
+      - name: Pull Vercel config
+        run: yarn vercel pull --yes --environment=preview --token=$VERCEL_TOKEN
 
-      # 2. Build para a Vercel
       - name: Build for Vercel
-        run: yarn vercel build --token=$VERCEL_TOKEN --scope=$VERCEL_SCOPE
+        run: yarn vercel build --token=$VERCEL_TOKEN
 
-      # 3. Deploy preview na Vercel
-      - name: Deploy preview
+      - name: Deploy Preview
         id: deploy
         run: |
-          URL=$(yarn --silent vercel deploy --prebuilt --token=$VERCEL_TOKEN --scope=$VERCEL_SCOPE)
+          URL=$(yarn --silent vercel deploy --prebuilt --token=$VERCEL_TOKEN)
           echo "deployment-url=$URL" >> $GITHUB_OUTPUT
 
   e2e-tests:
@@ -76,35 +73,29 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # Faz checkout do código do repositorio
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # Faz o setup do Node.js
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 22
           cache: yarn
 
-      # Instala as dependências do projeto
       - name: Install dependencies
         run: yarn install --frozen-lockfile
 
-      # Instalação do Chromium
       - name: Install Playwright Browser
         run: yarn playwright install --with-deps chromium
 
-      - name: Run E2E tests
+      - name: Run E2E Tests
         run: yarn test:e2e
 
-      # Execução dos Testes de Regressão
       - name: Run Regression Tests
         run: yarn playwright test playwright/e2e/online.spec.ts
         env:
           BASE_URL: ${{ needs.build-and-deploy.outputs.deployment-url }}
 
-      # 7. Relatorio de testes Automatizados
       - name: Upload Playwright report
         if: ${{ !cancelled() }}
         uses: actions/upload-artifact@v7.0.1
