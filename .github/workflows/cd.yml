@@ -60,6 +60,8 @@ jobs:
       # 2.1 Checkout do código
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref || github.ref_name }}
 
       # 2.2 Configuração do Node.js
       - name: Setup Node.js
@@ -135,15 +137,13 @@ jobs:
           name: playwright-report
           path: playwright-report
 
+  # 4. Promover o deploy para produção (somente push na main)
+  promote:
+    name: Promote to Production
+    needs: [e2e-tests, build-and-deploy]
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
 
-
-        promote:
-           name:     Promote to Production
-           needs:    [e2e-tests, build-and-deploy]
-           runs-on:   ubuntu-latest      
-
-           steps:
-            - name: Vercel promote
-              run: |
-                npx vercel@latest promote ${{ needs.build-and-deploy.outputs.deployment-url }} --token=$VERCEL_TOKEN --scope=$VERCEL_SCOPE --yes
-             
+    steps:
+      - name: Vercel promote
+        run: npx vercel@latest promote ${{ needs.build-and-deploy.outputs.deployment-url }} --token=$VERCEL_TOKEN --yes
