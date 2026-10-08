@@ -60,6 +60,8 @@ jobs:
       # 2.1 Checkout do código
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref || github.ref_name }}
 
       # 2.2 Configuração do Node.js
       - name: Setup Node.js
