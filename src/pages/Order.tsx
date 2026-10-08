@@ -2,7 +2,6 @@ import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import InputMask from 'react-input-mask';
 import { ArrowLeft, Loader2 } from 'lucide-react';
-import { z } from 'zod';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -28,6 +27,7 @@ import {
 import { createOrder } from '@/hooks/useOrders';
 import { supabase } from '@/integrations/supabase/client';
 import { decideCreditStatus } from '@/lib/creditDecision';
+import { orderSchema, type OrderFormData } from '@/lib/validators';
 
 import logo from '@/assets/brand.svg';
 import glacierBlueAero from '@/assets/glacier-blue-aero-wheels.png';
@@ -59,17 +59,7 @@ const stores = [
   'Velô Ibirapuera - Av. Ibirapuera, 3000',
 ];
 
-const orderSchema = z.object({
-  name: z.string().min(2, 'Nome deve ter pelo menos 2 caracteres'),
-  surname: z.string().min(2, 'Lastname deve ter pelo menos 2 caracteres'),
-  email: z.string().email('Email inválido'),
-  phone: z.string().min(14, 'Telefone inválido'),
-  cpf: z.string().min(14, 'Document inválido'),
-  store: z.string().min(1, 'Selecione uma loja'),
-  terms: z.boolean().refine((val) => val === true, 'Aceite os termos'),
-});
-
-type FormData = z.infer<typeof orderSchema>;
+type FormData = OrderFormData;
 
 const colorLabels: Record<ExteriorColor, string> = {
   'glacier-blue': 'Glacier Blue',

@@ -7,7 +7,7 @@ Crie um fluxo de trabalho do GitHub Actions focado exclusivamente em testes unit
 - Node.js 24
 - Vitest
 - Script: "teste": "execução do vitest"
-- Execução: teste de fios
+- Execução: yarn test
 
 ## Requisitos
 
