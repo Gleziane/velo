@@ -126,7 +126,6 @@ jobs:
 
     env:
       BASE_URL: ${{ needs.build-and-deploy.outputs.deployment-url }}
-      DATABASE_URL: ${{ secrets.SUPABASE }}
 
     steps:
       - name: Checkout repository
