@@ -83,10 +83,14 @@ export default defineConfig({
     //   use: { ...devices['Desktop Chrome'], channel: 'chrome' },
     // },
   ],
-  /* Run your local dev server before starting the tests */
-  webServer: {
-    command: 'yarn dev',
-    url: 'http://localhost:5173',
-    reuseExistingServer: !process.env.CI,
-  }
+  /* Sobe o servidor local apenas quando não há BASE_URL.
+     No CD, BASE_URL aponta para o deploy de Preview na Vercel,
+     então os testes E2E rodam contra o Preview e não contra o localhost. */
+  webServer: process.env.BASE_URL
+    ? undefined
+    : {
+        command: 'yarn dev',
+        url: 'http://localhost:5173',
+        reuseExistingServer: !process.env.CI,
+      },
 });
